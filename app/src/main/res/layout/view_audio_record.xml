@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical">
+
+    <com.tougee.recorderview.AudioScaleView
+            android:id="@+id/audio_scale"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@android:color/transparent"/>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@android:color/white">
+
+        <TextView
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/margin_horizontal"
+                android:textColor="@android:color/black"
+                tools:ignore="RelativeOverlap"/>
+
+        <TextView
+                android:id="@+id/slide_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_chevron_left_gray_24dp"
+                android:textColor="@color/color_gray"
+                android:text="@string/slide_to_cancel"
+                tools:ignore="RelativeOverlap"/>
+    </RelativeLayout>
+
+    <com.tougee.recorderview.MicImageView
+            android:id="@+id/mic_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:padding="@dimen/padding"
+            android:layout_marginEnd="@dimen/padding"
+            android:src="@drawable/ic_mic_blue_24dp"
+            tools:ignore="ContentDescription"/>
+</merge>
