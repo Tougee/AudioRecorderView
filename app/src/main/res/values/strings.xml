@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RecorderView</string>
     <string name="slide_to_cancel">Slide to Cancel</string>
+    <string name="time">%d\'</string>
 </resources>

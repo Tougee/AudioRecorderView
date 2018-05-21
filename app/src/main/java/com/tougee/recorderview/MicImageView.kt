@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.animation.BounceInterpolator
@@ -16,8 +15,6 @@ class MicImageView : ImageView {
     companion object {
         const val EXPAND = 2f
     }
-
-    private val expandBg: Drawable
 
     var callback: MicImageCallback? = null
 
@@ -40,14 +37,44 @@ class MicImageView : ImageView {
         interpolator = BounceInterpolator()
     }
 
+    private val defaultMaxScrollX = context.dip(150f).toInt()
+    private var startX = 0f
+    private var originX = 0f
+    private var ignoreTouch = false
+    private var maxScrollX = defaultMaxScrollX
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (ignoreTouch && (event.action != MotionEvent.ACTION_CANCEL
+                && event.action != MotionEvent.ACTION_UP)) {
+            return false
+        }
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                expand()
+                startX = event.rawX
+                originX = event.rawX
+                maxScrollX = callback?.onStart() ?: defaultMaxScrollX
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val moveX = event.rawX
+                if (moveX != 0f) {
+                    callback?.onSlide(startX - moveX)
+                    if (originX - moveX >= maxScrollX) {
+                        ignoreTouch = true
+                        return true
+                    }
+                }
+                startX = moveX
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                startX = 0f
+                originX = 0f
+                callback?.onEnd()
+                ignoreTouch = false
             }
         }
         return true
@@ -57,8 +84,7 @@ class MicImageView : ImageView {
         AnimatorSet().apply {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
-                    background =
-                    callback?.onExpand()
+                    callback?.onStart()
                 }
             })
             playTogether(expandX, expandY)
@@ -69,7 +95,7 @@ class MicImageView : ImageView {
         AnimatorSet().apply {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
-                    callback?.onShrink()
+                    callback?.onEnd()
                 }
             })
             playTogether(shrinkX, shrinkY)
@@ -77,7 +103,8 @@ class MicImageView : ImageView {
     }
 
     interface MicImageCallback {
-        fun onExpand()
-        fun onShrink()
+        fun onStart(): Int
+        fun onSlide(x: Float)
+        fun onEnd()
     }
 }

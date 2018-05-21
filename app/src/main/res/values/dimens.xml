@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="margin_horizontal">16dp</dimen>
-    <dimen name="blink_size">16dp</dimen>
-    <dimen name="padding">8dp</dimen>
+    <dimen name="margin16">16dp</dimen>
+    <dimen name="margin12">12dp</dimen>
+    <dimen name="blink_size">8dp</dimen>
+    <dimen name="padding8">8dp</dimen>
 </resources>
