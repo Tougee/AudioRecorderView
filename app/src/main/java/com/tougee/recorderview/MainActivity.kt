@@ -6,12 +6,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.util.Random
 import kotlin.concurrent.fixedRateTimer
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AudioRecordView.AudioRecorderCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         record_view.start()
+        record_view.callback = this
     }
 
     override fun onResume() {
@@ -20,8 +21,14 @@ class MainActivity : AppCompatActivity() {
         val x = dip(15f).toInt()
         fixedRateTimer("scale", false, 0, 1000, {
             val h = r.nextInt(x).toFloat()
-            scale_view.addScale(h)
             record_view.addScale(h)
         })
+    }
+    override fun onEnd() {
+        toast("onEnd")
+    }
+
+    override fun onCancel() {
+        toast("onCancel")
     }
 }

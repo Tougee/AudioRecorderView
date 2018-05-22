@@ -1,18 +1,23 @@
 package com.tougee.recorderview
 
-import android.animation.ValueAnimator
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.animation.AccelerateInterpolator
-import android.widget.LinearLayout
+import android.view.animation.DecelerateInterpolator
+import android.widget.RelativeLayout
 import kotlinx.android.synthetic.main.view_audio_record.view.*
 
-class AudioRecordView: LinearLayout {
+class AudioRecordView: RelativeLayout {
 
     private val blinkingDrawable: BlinkingDrawable
     private var timeValue = 0
+
+    var callback: AudioRecorderCallback? = null
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -23,7 +28,8 @@ class AudioRecordView: LinearLayout {
         val ta = context.obtainStyledAttributes(attrs, R.styleable.AudioRecordView)
         ta?.let {
             if (ta.hasValue(R.styleable.AudioRecordView_blink_color)) {
-                blinkColor = ta.getColor(R.styleable.AudioRecordView_blink_color, ContextCompat.getColor(context, R.color.color_blink))
+                blinkColor = ta.getColor(R.styleable.AudioRecordView_blink_color,
+                    ContextCompat.getColor(context, R.color.color_blink))
             }
 
             ta.recycle()
@@ -35,8 +41,6 @@ class AudioRecordView: LinearLayout {
         }
         time_tv.setCompoundDrawables(blinkingDrawable, null, null, null)
         mic_view.callback = micCallback
-
-        orientation = VERTICAL
     }
 
     fun addScale(h: Float) {
@@ -55,6 +59,15 @@ class AudioRecordView: LinearLayout {
     private val micCallback: MicImageView.MicImageCallback = object : MicImageView.MicImageCallback {
 
         override fun onStart(): Int {
+            context.vibrate(longArrayOf(0, 30))
+            bottom_rl.visibility = View.VISIBLE
+            bottom_rl.translationX = (bottom_rl.width).toFloat()
+            bottom_rl.animate().apply {
+                translationX(0f)
+                interpolator = DecelerateInterpolator()
+                duration = 200
+            }.start()
+
             return slide_ll.width
         }
 
@@ -69,18 +82,37 @@ class AudioRecordView: LinearLayout {
             slide_ll.alpha = 1 - alpha
         }
 
-        override fun onEnd() {
-            val valueAnimator = ValueAnimator.ofInt(slide_ll.scrollX, 0).apply {
-                duration = 150
+        override fun onEnd(cancel: Boolean) {
+            context.vibrate(longArrayOf(0, 30))
+             bottom_rl.animate().apply {
+                translationX(bottom_rl.width.toFloat())
                 interpolator = AccelerateInterpolator()
-                addUpdateListener {
-                    val curScrollX = animatedValue as Int
-                    slide_ll.scrollTo(curScrollX, 0)
-                    val alpha = curScrollX.toFloat() / slide_ll.width
-                    slide_ll.alpha = 1 - alpha + slide_ll.alpha
-                }
-            }
-            valueAnimator.start()
+                duration = 200
+                setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        handleEnd(cancel)
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {
+                        handleEnd(cancel)
+                    }
+                })
+            }.start()
         }
+    }
+
+    private fun handleEnd(cancel: Boolean) {
+        slide_ll.scrollX = 0
+        slide_ll.alpha = 1f
+        if (cancel) {
+            callback?.onCancel()
+        } else {
+            callback?.onEnd()
+        }
+    }
+
+    interface AudioRecorderCallback {
+        fun onEnd()
+        fun onCancel()
     }
 }

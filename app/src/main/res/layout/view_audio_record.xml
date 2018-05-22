@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:tools="http://schemas.android.com/tools"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
     <com.tougee.recorderview.AudioScaleView
             android:id="@+id/audio_scale"
             android:layout_width="match_parent"
             android:layout_height="20dp"
+            android:layout_above="@+id/bottom_rl"
             android:background="@android:color/transparent"/>
 
     <RelativeLayout
+            android:id="@+id/bottom_rl"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@android:color/white">
+            android:visibility="invisible"
+            android:layout_alignParentBottom="true">
 
         <LinearLayout
                 android:id="@+id/slide_ll"
@@ -47,15 +49,16 @@
                 android:drawablePadding="@dimen/padding8"
                 android:textColor="@android:color/black"
                 tools:ignore="RelativeOverlap"/>
-
-        <com.tougee.recorderview.MicImageView
-                android:id="@+id/mic_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:padding="@dimen/margin12"
-                android:src="@drawable/ic_mic_blue_24dp"
-                tools:ignore="ContentDescription"/>
     </RelativeLayout>
-</merge>
+
+    <com.tougee.recorderview.MicImageView
+            android:id="@+id/mic_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/margin12"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/ic_mic_blue_24dp"
+            tools:ignore="ContentDescription"/>
+</RelativeLayout>

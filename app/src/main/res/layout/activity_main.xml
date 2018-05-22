@@ -6,15 +6,9 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-    <com.tougee.recorderview.AudioScaleView
-            android:id="@+id/scale_view"
-            android:layout_width="match_parent"
-            android:layout_height="18dp"/>
-
-
     <com.tougee.recorderview.AudioRecordView
             android:id="@+id/record_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_alignParentBottom="true"/>
 </RelativeLayout>

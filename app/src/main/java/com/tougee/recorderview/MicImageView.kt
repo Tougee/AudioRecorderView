@@ -40,8 +40,8 @@ class MicImageView : ImageView {
     private val defaultMaxScrollX = context.dip(150f).toInt()
     private var startX = 0f
     private var originX = 0f
-    private var ignoreTouch = false
     private var maxScrollX = defaultMaxScrollX
+    private var ignoreTouch = false
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -50,7 +50,7 @@ class MicImageView : ImageView {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (ignoreTouch && (event.action != MotionEvent.ACTION_CANCEL
                 && event.action != MotionEvent.ACTION_UP)) {
-            return false
+            return true
         }
 
         when (event.action) {
@@ -65,19 +65,32 @@ class MicImageView : ImageView {
                     callback?.onSlide(startX - moveX)
                     if (originX - moveX >= maxScrollX) {
                         ignoreTouch = true
+                        callback?.onEnd(true)
                         return true
                     }
                 }
                 startX = moveX
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                startX = 0f
-                originX = 0f
-                callback?.onEnd()
-                ignoreTouch = false
+            MotionEvent.ACTION_UP -> {
+                if (!ignoreTouch) {
+                    callback?.onEnd(false)
+                }
+                cleanUp()
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                if (!ignoreTouch) {
+                    callback?.onEnd(true)
+                }
+                cleanUp()
             }
         }
         return true
+    }
+
+    private fun cleanUp() {
+        startX = 0f
+        originX = 0f
+        ignoreTouch = false
     }
 
     private fun expand() {
@@ -95,7 +108,6 @@ class MicImageView : ImageView {
         AnimatorSet().apply {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
-                    callback?.onEnd()
                 }
             })
             playTogether(shrinkX, shrinkY)
@@ -105,6 +117,6 @@ class MicImageView : ImageView {
     interface MicImageCallback {
         fun onStart(): Int
         fun onSlide(x: Float)
-        fun onEnd()
+        fun onEnd(cancel: Boolean)
     }
 }
