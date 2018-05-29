@@ -1,4 +1,4 @@
-package com.tougee.recorderview
+package com.tougee.demo
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator.INFINITE

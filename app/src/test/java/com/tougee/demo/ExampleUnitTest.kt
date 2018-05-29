@@ -1,4 +1,4 @@
-package com.tougee.recorderview
+package com.tougee.demo
 
 import org.junit.Test
 

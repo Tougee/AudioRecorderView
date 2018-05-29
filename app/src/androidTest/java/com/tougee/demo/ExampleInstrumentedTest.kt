@@ -1,4 +1,4 @@
-package com.tougee.recorderview
+package com.tougee.demo
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

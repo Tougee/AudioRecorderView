@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package com.tougee.recorderview
+package com.tougee.demo
 
 import android.content.Context
 import android.os.Build

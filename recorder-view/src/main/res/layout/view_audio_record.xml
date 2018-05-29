@@ -4,7 +4,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-    <com.tougee.recorderview.AudioScaleView
+    <com.tougee.demo.AudioScaleView
             android:id="@+id/audio_scale"
             android:layout_width="match_parent"
             android:layout_height="20dp"
@@ -51,7 +51,7 @@
                 tools:ignore="RelativeOverlap"/>
     </RelativeLayout>
 
-    <com.tougee.recorderview.MicImageView
+    <com.tougee.demo.MicImageView
             android:id="@+id/mic_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
