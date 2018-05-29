@@ -6,6 +6,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.animation.BounceInterpolator
 import android.widget.ImageView
@@ -88,6 +89,7 @@ class MicImageView : ImageView {
     }
 
     private fun cleanUp() {
+        Log.d("@@@", "MicImageView: cleanUp")
         startX = 0f
         originX = 0f
         ignoreTouch = false

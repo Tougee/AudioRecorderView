@@ -1,1 +1,1 @@
-include ':app', ':recorder-view'
+include ':example', ':recorder-view'

@@ -58,4 +58,8 @@ class BlinkingDrawable(private val color: Int) : Drawable() {
         }
         alphaAnimator?.start()
     }
+
+    fun stopBlinking() {
+        alphaAnimator?.cancel()
+    }
 }

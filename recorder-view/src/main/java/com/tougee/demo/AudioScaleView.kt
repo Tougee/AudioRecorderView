@@ -29,6 +29,19 @@ class AudioScaleView : View {
     private var animPos = 0f
     private var animating = false
 
+    var canceled = false
+    set(value) {
+        field = value
+        if (value) {
+            scales.clear()
+            animQueue.clear()
+            curStopY = 0f
+            animPos = 0f
+            animating = false
+            invalidate()
+        }
+    }
+
     private var scaleColor = SCALE_COLOR
 
     private val scalePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -50,6 +63,12 @@ class AudioScaleView : View {
     }
 
     override fun onDraw(canvas: Canvas) {
+        if (canceled) {
+            canceled = false
+            canvas.drawColor(Color.TRANSPARENT)
+            return
+        }
+
         if (scales.isEmpty()) return
 
         if (animQueue.isNotEmpty()) {

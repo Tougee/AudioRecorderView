@@ -12,7 +12,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
 import kotlinx.android.synthetic.main.view_audio_record.view.*
 
-class AudioRecordView: RelativeLayout {
+class AudioRecordView : RelativeLayout {
 
     private val blinkingDrawable: BlinkingDrawable
     private var timeValue = 0
@@ -67,7 +67,7 @@ class AudioRecordView: RelativeLayout {
                 interpolator = DecelerateInterpolator()
                 duration = 200
             }.start()
-
+            callback?.onRecordStart()
             return slide_ll.width
         }
 
@@ -84,7 +84,7 @@ class AudioRecordView: RelativeLayout {
 
         override fun onEnd(cancel: Boolean) {
             context.vibrate(longArrayOf(0, 30))
-             bottom_rl.animate().apply {
+            bottom_rl.animate().apply {
                 translationX(bottom_rl.width.toFloat())
                 interpolator = AccelerateInterpolator()
                 duration = 200
@@ -102,6 +102,7 @@ class AudioRecordView: RelativeLayout {
     }
 
     private fun handleEnd(cancel: Boolean) {
+        bottom_rl.animate().setListener(null)
         slide_ll.scrollX = 0
         slide_ll.alpha = 1f
         if (cancel) {
@@ -109,9 +110,15 @@ class AudioRecordView: RelativeLayout {
         } else {
             callback?.onEnd()
         }
+
+        blinkingDrawable.stopBlinking()
+        audio_scale.canceled = true
+        timeValue = 0
+        time_tv.text = context.getString(R.string.time, 0)
     }
 
     interface AudioRecorderCallback {
+        fun onRecordStart()
         fun onEnd()
         fun onCancel()
     }
