@@ -24,9 +24,9 @@
             android:src="@drawable/ic_play_arrow_black_24dp"
             tools:ignore="ContentDescription"/>
 
-    <com.tougee.demo.AudioRecordView
+    <com.tougee.recorderview.AudioRecordView
             android:id="@+id/record_view"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"/>
 </RelativeLayout>

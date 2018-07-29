@@ -1,4 +1,4 @@
-package com.tougee.demo
+package com.tougee.recorderview
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

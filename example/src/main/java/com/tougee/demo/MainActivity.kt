@@ -8,15 +8,15 @@ import android.os.ParcelFileDescriptor
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.tougee.recorderview.AudioRecordView
+import com.tougee.recorderview.toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.PrintWriter
-import java.util.Random
-import java.util.Timer
-import kotlin.concurrent.fixedRateTimer
 
-class MainActivity : AppCompatActivity(), AudioRecordView.AudioRecorderCallback {
+class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
+
     companion object {
         const val REQUEST_CAMERA_PERMISSION_RESULT = 123
     }
@@ -37,14 +37,13 @@ class MainActivity : AppCompatActivity(), AudioRecordView.AudioRecorderCallback 
         f
     }
 
-    private lateinit var audioRecord: AudioRecorder
+    private var audioRecord: AudioRecorder? = null
     private var audioPlayer: AudioPlayer? = null
-
-    private var timer: Timer?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        record_view.activity = this
         file_tv.text = "path: ${file.absolutePath}\nlength: ${file.length()}"
         record_view.callback = this
         play_iv.setOnClickListener {
@@ -64,36 +63,28 @@ class MainActivity : AppCompatActivity(), AudioRecordView.AudioRecorderCallback 
         requestPermission()
     }
 
-    override fun onRecordStart() {
-        super.onStart()
+
+    override fun onRecordStart(audio: Boolean) {
         toast("onRecordStart")
 
         clearFile(tmpFile)
 
         audioRecord = AudioRecorder(ParcelFileDescriptor.open(tmpFile, ParcelFileDescriptor.MODE_READ_WRITE))
-        record_view.start()
-        audioRecord.start()
-
-        val r = Random()
-        val x = dip(15f).toInt()
-        timer = fixedRateTimer("scale", false, 0, 1000, {
-            val h = r.nextInt(x).toFloat()
-            record_view.addScale(h)
-        })
+        audioRecord?.start()
     }
 
-    override fun onEnd() {
+    override fun isReady() = true
+
+    override fun onRecordEnd() {
         toast("onEnd")
-        audioRecord.stop()
-        timer?.cancel()
+        audioRecord?.stop()
 
         tmpFile.copyTo(file, true)
     }
 
-    override fun onCancel() {
+    override fun onRecordCancel() {
         toast("onCancel")
-        audioRecord.stop()
-        timer?.cancel()
+        audioRecord?.stop()
     }
 
     private fun clearFile(f: File) {

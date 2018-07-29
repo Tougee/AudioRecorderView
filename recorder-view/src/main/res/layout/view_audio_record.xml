@@ -1,64 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
 
-    <com.tougee.demo.AudioScaleView
-            android:id="@+id/audio_scale"
+    <ImageButton
+            android:id="@+id/record_ib"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/chat_control_height"
+            android:background="@null"
+            android:layout_gravity="end|bottom"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:src="@drawable/ic_record_mic_black"
+            tools:ignore="ContentDescription"/>
+
+    <com.tougee.recorderview.SlidePanelView
+            android:id="@+id/slide_panel"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_above="@+id/bottom_rl"
-            android:background="@android:color/transparent"/>
+            android:layout_height="@dimen/chat_control_height"
+            android:layout_gravity="bottom"
+            android:visibility="gone"/>
 
-    <RelativeLayout
-            android:id="@+id/bottom_rl"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:visibility="invisible"
-            android:layout_alignParentBottom="true">
+    <com.tougee.recorderview.RecordCircleView
+            android:id="@+id/record_circle"
+            android:layout_width="124dp"
+            android:layout_height="194dp"
+            android:visibility="gone"
+            android:layout_gravity="end|bottom"
+            android:translationX="36dp"/>
 
-        <LinearLayout
-                android:id="@+id/slide_ll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_centerInParent="true"
-                tools:ignore="RelativeOverlap,UseCompoundDrawables">
-
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_chevron_left_gray_24dp"
-                    tools:ignore="ContentDescription"/>
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/color_gray"
-                    android:text="@string/slide_to_cancel"
-                    tools:ignore="RelativeOverlap"/>
-        </LinearLayout>
-
-        <TextView
-                android:id="@+id/time_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/margin12"
-                android:drawablePadding="@dimen/padding8"
-                android:textColor="@android:color/black"
-                tools:ignore="RelativeOverlap"/>
-    </RelativeLayout>
-
-    <com.tougee.demo.MicImageView
-            android:id="@+id/mic_view"
+    <TextView
+            android:id="@+id/record_tip_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="@dimen/margin12"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/ic_mic_blue_24dp"
-            tools:ignore="ContentDescription"/>
-</RelativeLayout>
+            android:textColor="@android:color/white"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="44dp"
+            android:layout_gravity="bottom|end"
+            android:visibility="invisible"
+            android:background="@drawable/bg_record_tip"
+            android:text="@string/hold_to_record_audio"/>
+</merge>
