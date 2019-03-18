@@ -20,6 +20,7 @@ class SlidePanelView : RelativeLayout {
     private var blinkingDrawable: BlinkingDrawable? = null
     private var timeValue = 0
     private var toCanceled = false
+    private var isEnding = false
 
     var callback: Callback? = null
 
@@ -77,6 +78,8 @@ class SlidePanelView : RelativeLayout {
     }
 
     fun toCancel() {
+        if (isEnding) return
+
         val animSet = AnimatorSet().apply {
             duration = 200
             interpolator = DecelerateInterpolator()
@@ -92,16 +95,19 @@ class SlidePanelView : RelativeLayout {
     }
 
     fun onEnd() {
+        isEnding = true
         val animSet = AnimatorSet().apply {
             interpolator = AccelerateInterpolator()
             duration = 200
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     handleEnd()
+                    isEnding = false
                 }
 
                 override fun onAnimationCancel(animation: Animator?) {
                     handleEnd()
+                    isEnding = false
                 }
             })
         }
@@ -113,13 +119,11 @@ class SlidePanelView : RelativeLayout {
     }
 
     private fun handleEnd() {
-        if (toCanceled) {
-            toCanceled = false
-            cancel_tv.alpha = 0f
-            cancel_tv.translationY = 0f
-            slide_ll.alpha = 1f
-            slide_ll.translationY = 0f
-        }
+        toCanceled = false
+        cancel_tv.alpha = 0f
+        cancel_tv.translationY = 0f
+        slide_ll.alpha = 1f
+        slide_ll.translationY = 0f
         slide_ll.translationX = 0f
 
         blinkingDrawable?.stopBlinking()

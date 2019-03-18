@@ -184,6 +184,7 @@ class AudioRecordView : FrameLayout {
                     slide_panel.slideText(startX - moveX)
                     if (originX - moveX > maxScrollX) {
                         removeCallbacks(recordRunnable)
+                        removeCallbacks(checkReadyRunnable)
                         handleCancelOrEnd(true)
                         slide_panel.parent.requestDisallowInterceptTouchEvent(false)
                         triggeredCancel = true
