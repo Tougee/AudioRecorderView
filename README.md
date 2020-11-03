@@ -28,6 +28,7 @@ Simple Audio Recorder View with 'swap-to-cancel' Like Telegram
 
                 record_view.activity = this
                 record_view.callback = this
+                record_view.setTimeoutSeconds(20)
             }
 
         override fun onRecordStart(audio: Boolean) {}
@@ -54,7 +55,7 @@ allprojects {
 Add the dependency:
 ```Gradle
 dependencies {
-    compile 'com.github.tougee:audiorecorderview:1.0.0'
+    implementation 'com.github.tougee:audiorecorderview:1.0.1'
 }
 ```
 
