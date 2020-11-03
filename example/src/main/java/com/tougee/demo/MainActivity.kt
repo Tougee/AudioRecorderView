@@ -1,6 +1,7 @@
 package com.tougee.demo
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -40,12 +41,14 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
     private var audioRecord: AudioRecorder? = null
     private var audioPlayer: AudioPlayer? = null
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         record_view.activity = this
         file_tv.text = "path: ${file.absolutePath}\nlength: ${file.length()}"
         record_view.callback = this
+        record_view.setTimeoutSeconds(20)
         play_iv.setOnClickListener {
             if (audioPlayer != null && audioPlayer!!.isPlaying) {
                 play_iv.setImageResource(R.drawable.ic_play_arrow_black_24dp)
@@ -95,6 +98,7 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
     }
 
     private fun requestPermission() {
+        @Suppress("ControlFlowWithEmptyBody")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
                 PackageManager.PERMISSION_GRANTED) {

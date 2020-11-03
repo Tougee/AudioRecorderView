@@ -2,6 +2,7 @@ package com.tougee.recorderview
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
@@ -64,6 +65,10 @@ class AudioRecordView : FrameLayout {
         cleanUp()
         updateRecordCircleAndSendIcon()
         slide_panel.parent.requestDisallowInterceptTouchEvent(false)
+    }
+    
+    fun setTimeoutSeconds(seconds: Int) {
+        slide_panel?.timeoutSeconds = seconds
     }
 
     private fun cleanUp() {
@@ -145,6 +150,7 @@ class AudioRecordView : FrameLayout {
     private var locked = false
     private var maxScrollX = context.dip(100f)
 
+    @SuppressLint("ClickableViewAccessibility")
     private val recordOnTouchListener = OnTouchListener { _, event ->
         when (event.action) {
             ACTION_DOWN -> {

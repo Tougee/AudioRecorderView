@@ -22,6 +22,8 @@ class SlidePanelView : RelativeLayout {
     private var toCanceled = false
     private var isEnding = false
 
+    var timeoutSeconds = 60
+
     var callback: Callback? = null
 
     constructor(context: Context) : this(context, null)
@@ -134,7 +136,7 @@ class SlidePanelView : RelativeLayout {
 
     private val updateTimeRunnable: Runnable by lazy {
         Runnable {
-            if (timeValue > 59) {
+            if (timeValue >= timeoutSeconds) {
                 callback?.onTimeout()
                 return@Runnable
             }
