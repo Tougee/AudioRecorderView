@@ -66,7 +66,7 @@ class AudioRecordView : FrameLayout {
         updateRecordCircleAndSendIcon()
         slide_panel.parent.requestDisallowInterceptTouchEvent(false)
     }
-    
+
     fun setTimeoutSeconds(seconds: Int) {
         slide_panel?.timeoutSeconds = seconds
     }
