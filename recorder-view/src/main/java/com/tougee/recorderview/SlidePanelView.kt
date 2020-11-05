@@ -17,6 +17,7 @@ import kotlin.math.abs
 
 class SlidePanelView : RelativeLayout {
 
+    private val blinkSize = context.resources.getDimensionPixelSize(R.dimen.blink_size)
     private var blinkingDrawable: BlinkingDrawable? = null
     private var timeValue = 0
     private var toCanceled = false
@@ -33,11 +34,7 @@ class SlidePanelView : RelativeLayout {
         setBackgroundColor(Color.WHITE)
         isClickable = true
 
-        val blinkSize = context.resources.getDimensionPixelSize(R.dimen.blink_size)
-        blinkingDrawable = BlinkingDrawable(ContextCompat.getColor(context, R.color.color_blink)).apply {
-            setBounds(0, 0, blinkSize, blinkSize)
-        }
-        time_tv.setCompoundDrawables(blinkingDrawable, null, null, null)
+        updateBlinkDrawable(ContextCompat.getColor(context, R.color.color_blink))
         cancel_tv.setOnClickListener { callback?.onCancel() }
         time_tv.text = 0L.formatMillis()
     }
@@ -118,6 +115,13 @@ class SlidePanelView : RelativeLayout {
             ObjectAnimator.ofFloat(this, "alpha", 0f)
         )
         animSet.start()
+    }
+
+    fun updateBlinkDrawable(color: Int) {
+        blinkingDrawable = BlinkingDrawable(color).apply {
+            setBounds(0, 0, blinkSize, blinkSize)
+        }
+        time_tv.setCompoundDrawables(blinkingDrawable, null, null, null)
     }
 
     private fun handleEnd() {

@@ -30,17 +30,17 @@ class AudioScaleView : View {
     private var animating = false
 
     var canceled = false
-    set(value) {
-        field = value
-        if (value) {
-            scales.clear()
-            animQueue.clear()
-            curStopY = 0f
-            animPos = 0f
-            animating = false
-            invalidate()
+        set(value) {
+            field = value
+            if (value) {
+                scales.clear()
+                animQueue.clear()
+                curStopY = 0f
+                animPos = 0f
+                animating = false
+                invalidate()
+            }
         }
-    }
 
     private var scaleColor = SCALE_COLOR
 

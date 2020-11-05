@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">recorder-view</string>
     <string name="slide_to_cancel">Slide to Cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="time">%d\'</string>
     <string name="hold_to_record_audio">Hold to record, release to send</string>
 </resources>
