@@ -45,9 +45,18 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        record_view.activity = this
         file_tv.text = "path: ${file.absolutePath}\nlength: ${file.length()}"
-        record_view.callback = this
+        record_view.apply {
+            activity = this@MainActivity
+            callback = this@MainActivity
+
+            // micIcon = R.drawable.ic_chevron_left_gray_24dp
+            // blinkColor = ContextCompat.getColor(this@MainActivity, R.color.color_blue)
+            // circleColor = ContextCompat.getColor(this@MainActivity, R.color.color_blink)
+            // cancelIconColor = ContextCompat.getColor(this@MainActivity, R.color.color_blue)
+            // slideCancelText = "Custom Slide to cancel"
+            // cancelText = "Custom Cancel"
+        }
         record_view.setTimeoutSeconds(20)
         play_iv.setOnClickListener {
             if (audioPlayer != null && audioPlayer!!.isPlaying) {
@@ -67,7 +76,7 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
     }
 
 
-    override fun onRecordStart(audio: Boolean) {
+    override fun onRecordStart() {
         toast("onRecordStart")
 
         clearFile(tmpFile)

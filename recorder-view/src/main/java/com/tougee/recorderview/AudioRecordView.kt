@@ -6,7 +6,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
+import android.support.annotation.ColorInt
+import android.support.annotation.DrawableRes
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -21,13 +22,11 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.view_audio_record.view.*
+import kotlinx.android.synthetic.main.view_slide_panel.view.*
 
 class AudioRecordView : FrameLayout {
 
     companion object {
-        const val AUDIO = 1
-        const val VIDEO = 2
-
         const val RECORD_DELAY = 200L
         const val RECORD_TIP_MILLIS = 2000L
 
@@ -37,24 +36,93 @@ class AudioRecordView : FrameLayout {
     lateinit var callback: Callback
     lateinit var activity: Activity
 
-    private var recordIconStatus = AUDIO
+    private var isRecording = false
+    private var upBeforeGrant = false
+
+    @DrawableRes
+    var micIcon: Int = R.drawable.ic_record_mic_black
         set(value) {
             if (value == field) return
 
             field = value
-            checkRecordIb()
+            record_ib.setImageResource(value)
         }
 
-    private var isRecording = false
-    private var upBeforeGrant = false
+    @ColorInt
+    var circleColor: Int = ContextCompat.getColor(context, R.color.color_blue)
+        set(value) {
+            if (value == field) return
 
-    private val audioDrawable: Drawable by lazy { resources.getDrawable(R.drawable.ic_record_mic_black, null) }
-    private val videoDrawable: Drawable by lazy { resources.getDrawable(R.drawable.ic_record_mic_black, null) }
+            field = value
+            record_circle.circlePaint.color = value
+    }
+
+    @ColorInt
+    var cancelIconColor: Int = ContextCompat.getColor(context, R.color.color_blink)
+        set(value) {
+            if (value == field) return
+
+            field = value
+            record_circle.cancelIconPaint.color = value
+        }
+
+    @ColorInt
+    var blinkColor: Int = ContextCompat.getColor(context, R.color.color_blink)
+        set(value) {
+            if (value == field) return
+
+            field = value
+            slide_panel.updateBlinkDrawable(value)
+        }
+
+    var slideCancelText: String = context.getString(R.string.slide_to_cancel)
+        set(value) {
+            if (value == field) return
+
+            field = value
+            slide_cancel_tv.text = value
+        }
+
+    var cancelText: String = context.getString(R.string.cancel)
+        set(value) {
+            if (value == field) return
+
+            field = value
+            cancel_tv.text = value
+        }
+
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         LayoutInflater.from(context).inflate(R.layout.view_audio_record, this, true)
+
+        val ta = context.obtainStyledAttributes(attrs, R.styleable.AudioRecordView)
+        if (ta.hasValue(R.styleable.AudioRecordView_mic_icon)) {
+            micIcon = ta.getResourceId(R.styleable.AudioRecordView_mic_icon, 0)
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_circle_color)) {
+            circleColor = ta.getColor(R.styleable.AudioRecordView_circle_color, 0)
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_cancel_icon_color)) {
+            circleColor = ta.getColor(R.styleable.AudioRecordView_cancel_icon_color, 0)
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_blink_color)) {
+            blinkColor = ta.getColor(R.styleable.AudioRecordView_blink_color, 0)
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_slide_cancel_text)) {
+            ta.getString(R.styleable.AudioRecordView_slide_cancel_text)?.let {
+                slideCancelText = it
+            }
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_cancel_text)) {
+             ta.getString(R.styleable.AudioRecordView_cancel_text)?.let {
+                 cancelText = it
+             }
+        }
+
+        ta.recycle()
+
         slide_panel.callback = chatSlideCallback
         record_circle.callback = recordCircleCallback
         record_ib.setOnTouchListener(recordOnTouchListener)
@@ -75,16 +143,6 @@ class AudioRecordView : FrameLayout {
         startX = 0f
         originX = 0f
         isRecording = false
-    }
-
-    private fun checkRecordIb() {
-        val d = when (recordIconStatus) {
-            AUDIO -> audioDrawable
-            VIDEO -> videoDrawable
-            else -> throw IllegalArgumentException("error send status")
-        }
-        d.setBounds(0, 0, d.intrinsicWidth, d.intrinsicHeight)
-        record_ib.setImageDrawable(d)
     }
 
     private fun handleCancelOrEnd(cancel: Boolean) {
@@ -126,20 +184,13 @@ class AudioRecordView : FrameLayout {
     }
 
     private fun clickSend() {
-        when (recordIconStatus) {
-            AUDIO -> {
-                if (record_tip_tv.visibility == View.INVISIBLE) {
-                    record_tip_tv.fadeIn(ANIMATION_DURATION)
-                    postDelayed(hideRecordTipRunnable, RECORD_TIP_MILLIS)
-                } else {
-                    removeCallbacks(hideRecordTipRunnable)
-                }
-                postDelayed(hideRecordTipRunnable, RECORD_TIP_MILLIS)
-            }
-            VIDEO -> {
-                recordIconStatus = AUDIO
-            }
+        if (record_tip_tv.visibility == View.INVISIBLE) {
+            record_tip_tv.fadeIn(ANIMATION_DURATION)
+            postDelayed(hideRecordTipRunnable, RECORD_TIP_MILLIS)
+        } else {
+            removeCallbacks(hideRecordTipRunnable)
         }
+        postDelayed(hideRecordTipRunnable, RECORD_TIP_MILLIS)
     }
 
     private var startX = 0f
@@ -255,19 +306,12 @@ class AudioRecordView : FrameLayout {
             removeCallbacks(hideRecordTipRunnable)
             post(hideRecordTipRunnable)
 
-            if (recordIconStatus == AUDIO) {
-                if (ContextCompat.checkSelfPermission(activity, (Manifest.permission.RECORD_AUDIO)) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 99)
-                    return@Runnable
-                }
-            } else {
-                if (ContextCompat.checkSelfPermission(activity, (Manifest.permission.RECORD_AUDIO)) != PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(activity, (Manifest.permission.CAMERA)) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA), 99)
-                    return@Runnable
-                }
+            if (ContextCompat.checkSelfPermission(activity, (Manifest.permission.RECORD_AUDIO)) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 99)
+                return@Runnable
             }
-            callback.onRecordStart(recordIconStatus == AUDIO)
+
+            callback.onRecordStart()
             upBeforeGrant = false
             post(checkReadyRunnable)
             record_ib.parent.requestDisallowInterceptTouchEvent(true)
@@ -282,7 +326,6 @@ class AudioRecordView : FrameLayout {
                     return@Runnable
                 }
                 isRecording = true
-                checkRecordIb()
                 updateRecordCircleAndSendIcon()
                 record_circle.setLockTranslation(10000f)
             } else {
@@ -312,7 +355,7 @@ class AudioRecordView : FrameLayout {
     }
 
     interface Callback {
-        fun onRecordStart(audio: Boolean)
+        fun onRecordStart()
         fun isReady(): Boolean
         fun onRecordEnd()
         fun onRecordCancel()

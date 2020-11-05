@@ -1,5 +1,6 @@
 package com.tougee.recorderview
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import kotlin.math.max
 
 class RecordCircleView : View {
 
@@ -20,13 +22,13 @@ class RecordCircleView : View {
     private val colorLock: Int by lazy { ContextCompat.getColor(context, R.color.text_gray) }
     private val colorOrange: Int by lazy { ContextCompat.getColor(context, R.color.color_blink) }
 
-    private val paint: Paint by lazy {
+    val circlePaint: Paint by lazy {
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorCircle
         }
     }
 
-    private val paintRecord: Paint by lazy {
+    val cancelIconPaint: Paint by lazy {
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorOrange
         }
@@ -124,6 +126,7 @@ class RecordCircleView : View {
         return 1
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (sendButtonVisible) {
             val x = event.x.toInt()
@@ -194,9 +197,9 @@ class RecordCircleView : View {
         }
         lastUpdateTime = System.currentTimeMillis()
         if (amplitude != 0f) {
-            canvas.drawCircle(measuredWidth / 2.0f, cy.toFloat(), (context.dipInt(42f) + context.dipInt(20f) * amplitude) * scale, paintRecord)
+            canvas.drawCircle(measuredWidth / 2.0f, cy.toFloat(), (context.dipInt(42f) + context.dipInt(20f) * amplitude) * scale, cancelIconPaint)
         }
-        canvas.drawCircle(measuredWidth / 2.0f, cy.toFloat(), context.dipInt(42f) * sc, paint)
+        canvas.drawCircle(measuredWidth / 2.0f, cy.toFloat(), context.dipInt(42f) * sc, circlePaint)
         val drawable: Drawable = if (sendButtonVisible) {
             sendDrawable
         } else {
@@ -208,7 +211,7 @@ class RecordCircleView : View {
         drawable.draw(canvas)
 
         val moveProgress = 1.0f - yAdd / context.dipInt(57f)
-        val moveProgress2 = Math.max(0.0f, 1.0f - yAdd / context.dipInt(57f) * 2)
+        val moveProgress2 = max(0.0f, 1.0f - yAdd / context.dipInt(57f) * 2)
         val lockSize: Int
         val lockY: Int
         val lockTopY: Int
@@ -254,7 +257,7 @@ class RecordCircleView : View {
         lockArrowDrawable.draw(canvas)
         if (sendButtonVisible) {
             rect.set(cx - context.dipInt(6.5f).toFloat(), lockY + context.dipInt(9f).toFloat(), cx + context.dipInt(6.5f).toFloat(), lockY.toFloat() + context.dipInt((9 + 13).toFloat()))
-            canvas.drawRoundRect(rect, context.dipInt(1f).toFloat(), context.dipInt(1f).toFloat(), paintRecord)
+            canvas.drawRoundRect(rect, context.dipInt(1f).toFloat(), context.dipInt(1f).toFloat(), cancelIconPaint)
         }
     }
 
