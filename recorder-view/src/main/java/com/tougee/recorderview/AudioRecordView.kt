@@ -55,7 +55,7 @@ class AudioRecordView : FrameLayout {
 
             field = value
             record_circle.circlePaint.color = value
-    }
+        }
 
     @ColorInt
     var cancelIconColor: Int = ContextCompat.getColor(context, R.color.color_blink)
@@ -91,7 +91,6 @@ class AudioRecordView : FrameLayout {
             cancel_tv.text = value
         }
 
-
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
@@ -116,9 +115,9 @@ class AudioRecordView : FrameLayout {
             }
         }
         if (ta.hasValue(R.styleable.AudioRecordView_cancel_text)) {
-             ta.getString(R.styleable.AudioRecordView_cancel_text)?.let {
-                 cancelText = it
-             }
+            ta.getString(R.styleable.AudioRecordView_cancel_text)?.let {
+                cancelText = it
+            }
         }
 
         ta.recycle()
@@ -158,11 +157,14 @@ class AudioRecordView : FrameLayout {
             ObjectAnimator.ofFloat(record_circle, "scale", 1f).apply {
                 interpolator = DecelerateInterpolator()
                 duration = 200
-                addListener(onEnd = {
-                    record_circle.visibility = View.VISIBLE
-                }, onCancel = {
-                    record_circle.visibility = View.VISIBLE
-                })
+                addListener(
+                    onEnd = {
+                        record_circle.visibility = View.VISIBLE
+                    },
+                    onCancel = {
+                        record_circle.visibility = View.VISIBLE
+                    }
+                )
             }.start()
             record_ib.animate().setDuration(200).alpha(0f).start()
             slide_panel.onStart()
@@ -170,13 +172,16 @@ class AudioRecordView : FrameLayout {
             ObjectAnimator.ofFloat(record_circle, "scale", 0f).apply {
                 interpolator = AccelerateInterpolator()
                 duration = 200
-                addListener(onEnd = {
-                    record_circle.visibility = View.GONE
-                    record_circle.setSendButtonInvisible()
-                }, onCancel = {
-                    record_circle.visibility = View.GONE
-                    record_circle.setSendButtonInvisible()
-                })
+                addListener(
+                    onEnd = {
+                        record_circle.visibility = View.GONE
+                        record_circle.setSendButtonInvisible()
+                    },
+                    onCancel = {
+                        record_circle.visibility = View.GONE
+                        record_circle.setSendButtonInvisible()
+                    }
+                )
             }.start()
             record_ib.animate().setDuration(200).alpha(1f).start()
             slide_panel.onEnd()
@@ -226,8 +231,10 @@ class AudioRecordView : FrameLayout {
 
                 val x = record_circle.setLockTranslation(event.y)
                 if (x == 2) {
-                    ObjectAnimator.ofFloat(record_circle, "lockAnimatedTranslation",
-                        record_circle.startTranslation).apply {
+                    ObjectAnimator.ofFloat(
+                        record_circle, "lockAnimatedTranslation",
+                        record_circle.startTranslation
+                    ).apply {
                         duration = 150
                         interpolator = DecelerateInterpolator()
                         doOnEnd { locked = true }
@@ -268,13 +275,16 @@ class AudioRecordView : FrameLayout {
                     removeCallbacks(recordRunnable)
                     removeCallbacks(checkReadyRunnable)
                     // delay check sendButtonVisible
-                    postDelayed({
-                        if (!record_circle.sendButtonVisible) {
-                            handleCancelOrEnd(true)
-                        } else {
-                            record_circle.sendButtonVisible = false
-                        }
-                    }, 200)
+                    postDelayed(
+                        {
+                            if (!record_circle.sendButtonVisible) {
+                                handleCancelOrEnd(true)
+                            } else {
+                                record_circle.sendButtonVisible = false
+                            }
+                        },
+                        200
+                    )
                     return@OnTouchListener false
                 }
 

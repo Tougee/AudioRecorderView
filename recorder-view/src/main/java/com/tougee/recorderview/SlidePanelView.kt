@@ -34,7 +34,7 @@ class SlidePanelView : RelativeLayout {
         setBackgroundColor(Color.WHITE)
         isClickable = true
 
-        updateBlinkDrawable(ContextCompat.getColor(context,R.color.color_blink))
+        updateBlinkDrawable(ContextCompat.getColor(context, R.color.color_blink))
         cancel_tv.setOnClickListener { callback?.onCancel() }
         time_tv.text = 0L.formatMillis()
     }
