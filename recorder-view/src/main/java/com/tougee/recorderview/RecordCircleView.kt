@@ -57,7 +57,7 @@ class RecordCircleView : View {
 
     lateinit var callback: Callback
 
-    private val audioDrawable: Drawable by lazy { resources.getDrawable(R.drawable.ic_record_mic_white, null) }
+    var audioDrawable: Drawable = resources.getDrawable(R.drawable.ic_record_mic_white, null)
     private val sendDrawable: Drawable by lazy { resources.getDrawable(R.drawable.ic_send_white_24dp, null) }
 
     private val lockDrawable: Drawable by lazy {

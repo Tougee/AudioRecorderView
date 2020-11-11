@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.Toast
 import com.tougee.recorderview.AudioRecordView
 import com.tougee.recorderview.toast
@@ -51,11 +52,17 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
             callback = this@MainActivity
 
             // micIcon = R.drawable.ic_chevron_left_gray_24dp
+            // micActiveIcon = R.drawable.ic_play_arrow_black_24dp
+            // micHintEnable = false
+            // micHintText = "Custom hint text"
+            // micHintColor = ContextCompat.getColor(this@MainActivity, android.R.color.holo_red_light)
+            // micHintBg = R.drawable.ic_launcher_background
             // blinkColor = ContextCompat.getColor(this@MainActivity, R.color.color_blue)
             // circleColor = ContextCompat.getColor(this@MainActivity, R.color.color_blink)
             // cancelIconColor = ContextCompat.getColor(this@MainActivity, R.color.color_blue)
             // slideCancelText = "Custom Slide to cancel"
             // cancelText = "Custom Cancel"
+            // vibrationEnable = false
         }
         record_view.setTimeoutSeconds(20)
         play_iv.setOnClickListener {
