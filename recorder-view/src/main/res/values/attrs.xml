@@ -2,10 +2,16 @@
 <resources>
     <declare-styleable name="AudioRecordView">
         <attr name="mic_icon" format="reference" />
+        <attr name="mic_active_icon" format="reference" />
+        <attr name="mic_hint_enable" format="boolean" />
+        <attr name="mic_hint_color" format="color" />
+        <attr name="mic_hint_bg" format="reference" />
+        <attr name="mic_hint_text" format="string" />
         <attr name="circle_color" format="color" />
         <attr name="blink_color" format="color"/>
         <attr name="cancel_icon_color" format="color" />
         <attr name="slide_cancel_text" format="string" />
         <attr name="cancel_text" format="string" />
+        <attr name="vibration_enable" format="boolean" />
     </declare-styleable>
 </resources>

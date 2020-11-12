@@ -16,11 +16,17 @@ Simple Audio Recorder View with 'swap-to-cancel' Like Telegram
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:mic_icon="@mipmap/ic_custom_mic"
+        app:mic_active_icon="@drawable/custom_mic_active"
+        app:mic_hint_enable="false"
+        app:mic_hint_color="@color/custom_hint_color"
+        app:mic_hint_text="@string/custom_hint_text"
+        app:mic_hint_bg="@drawable/custom_hint_bg"
         app:blink_color="@color/custom_blink_color"
         app:circle_color="@color/custom_circle_color"
         app:cancel_icon_color="@color/custom_cancel_icon_color"
         app:slide_cancel_text="@string/custom_slide_cancel_text"
         app:cancel_text="@string/custom_cancel_text"
+        app:vibration_enable="false"
         android:layout_alignParentBottom="true"/>
 
 ```
@@ -36,12 +42,18 @@ Simple Audio Recorder View with 'swap-to-cancel' Like Telegram
                 activity = this@MainActivity
                 callback = this@MainActivity
 
-                micIcon = R.drawable.ic_custom_mic
-                blinkColor = ContextCompat.getColor(this@MainActivity, R.color.custom_blink_color)
-                circleColor = ContextCompat.getColor(this@MainActivity, R.color.custom_blink_color)
-                cancelIconColor = ContextCompat.getColor(this@MainActivity, R.color.custom_cancel_icon_color)
+                micIcon = R.drawable.ic_chevron_left_gray_24dp
+                micActiveIcon = R.drawable.ic_play_arrow_black_24dp
+                micHintEnable = false
+                micHintText = "Custom hint text"
+                micHintColor = ContextCompat.getColor(this@MainActivity, android.R.color.holo_red_light)
+                micHintBg = R.drawable.ic_launcher_background
+                blinkColor = ContextCompat.getColor(this@MainActivity, R.color.color_blue)
+                circleColor = ContextCompat.getColor(this@MainActivity, R.color.color_blink)
+                cancelIconColor = ContextCompat.getColor(this@MainActivity, R.color.color_blue)
                 slideCancelText = "Custom Slide to cancel"
                 cancelText = "Custom Cancel"
+                vibrationEnable = false
             }
 
             record_view.setTimeoutSeconds(20)

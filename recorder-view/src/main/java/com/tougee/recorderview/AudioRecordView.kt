@@ -48,6 +48,43 @@ class AudioRecordView : FrameLayout {
             record_ib.setImageResource(value)
         }
 
+    @DrawableRes
+    var micActiveIcon: Int = R.drawable.ic_record_mic_white
+        set(value) {
+            if (value == field) return
+
+            field = value
+            record_circle.audioDrawable = resources.getDrawable(value, null)
+        }
+
+    var micHintEnable: Boolean = true
+
+    @ColorInt
+    var micHintColor: Int = ContextCompat.getColor(context, android.R.color.white)
+        set(value) {
+            if (value == field) return
+
+            field = value
+            record_tip_tv.setTextColor(value)
+        }
+
+    var micHintText: String = context.getString(R.string.hold_to_record_audio)
+        set(value) {
+            if (value == field) return
+
+            field = value
+            record_tip_tv.text = micHintText
+        }
+
+    @DrawableRes
+    var micHintBg: Int = R.drawable.bg_record_tip
+        set(value) {
+            if (value == field) return
+
+            field = value
+            record_tip_tv.setBackgroundResource(value)
+        }
+
     @ColorInt
     var circleColor: Int = ContextCompat.getColor(context, R.color.color_blue)
         set(value) {
@@ -91,6 +128,8 @@ class AudioRecordView : FrameLayout {
             cancel_tv.text = value
         }
 
+    var vibrationEnable: Boolean = true
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
@@ -100,11 +139,28 @@ class AudioRecordView : FrameLayout {
         if (ta.hasValue(R.styleable.AudioRecordView_mic_icon)) {
             micIcon = ta.getResourceId(R.styleable.AudioRecordView_mic_icon, 0)
         }
+        if (ta.hasValue(R.styleable.AudioRecordView_mic_active_icon)) {
+            micActiveIcon = ta.getResourceId(R.styleable.AudioRecordView_mic_active_icon, 0)
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_mic_hint_enable)) {
+            micHintEnable = ta.getBoolean(R.styleable.AudioRecordView_mic_hint_enable, true)
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_mic_hint_text)) {
+            ta.getString(R.styleable.AudioRecordView_mic_hint_text)?.let {
+                micHintText = it
+            }
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_mic_hint_color)) {
+            micHintColor = ta.getColor(R.styleable.AudioRecordView_mic_hint_color, 0)
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_mic_hint_bg)) {
+            micHintBg = ta.getResourceId(R.styleable.AudioRecordView_mic_hint_bg, 0)
+        }
         if (ta.hasValue(R.styleable.AudioRecordView_circle_color)) {
             circleColor = ta.getColor(R.styleable.AudioRecordView_circle_color, 0)
         }
         if (ta.hasValue(R.styleable.AudioRecordView_cancel_icon_color)) {
-            circleColor = ta.getColor(R.styleable.AudioRecordView_cancel_icon_color, 0)
+            cancelIconColor = ta.getColor(R.styleable.AudioRecordView_cancel_icon_color, 0)
         }
         if (ta.hasValue(R.styleable.AudioRecordView_blink_color)) {
             blinkColor = ta.getColor(R.styleable.AudioRecordView_blink_color, 0)
@@ -118,6 +174,9 @@ class AudioRecordView : FrameLayout {
             ta.getString(R.styleable.AudioRecordView_cancel_text)?.let {
                 cancelText = it
             }
+        }
+        if (ta.hasValue(R.styleable.AudioRecordView_vibration_enable)) {
+            vibrationEnable = ta.getBoolean(R.styleable.AudioRecordView_vibration_enable, true)
         }
 
         ta.recycle()
@@ -146,6 +205,9 @@ class AudioRecordView : FrameLayout {
 
     private fun handleCancelOrEnd(cancel: Boolean) {
         if (cancel) callback.onRecordCancel() else callback.onRecordEnd()
+        if (vibrationEnable) {
+            context.vibrate(longArrayOf(0, 10))
+        }
         cleanUp()
         updateRecordCircleAndSendIcon()
     }
@@ -189,8 +251,11 @@ class AudioRecordView : FrameLayout {
     }
 
     private fun clickSend() {
-        if (record_tip_tv.visibility == View.INVISIBLE) {
+        if (micHintEnable && record_tip_tv.visibility == View.INVISIBLE) {
             record_tip_tv.fadeIn(ANIMATION_DURATION)
+            if (vibrationEnable) {
+                context.vibrate(longArrayOf(0, 10))
+            }
             postDelayed(hideRecordTipRunnable, RECORD_TIP_MILLIS)
         } else {
             removeCallbacks(hideRecordTipRunnable)
@@ -322,6 +387,9 @@ class AudioRecordView : FrameLayout {
             }
 
             callback.onRecordStart()
+            if (vibrationEnable) {
+                context.vibrate(longArrayOf(0, 10))
+            }
             upBeforeGrant = false
             post(checkReadyRunnable)
             record_ib.parent.requestDisallowInterceptTouchEvent(true)
