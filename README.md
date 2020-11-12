@@ -83,7 +83,7 @@ allprojects {
 Add the dependency:
 ```Gradle
 dependencies {
-    implementation 'com.github.tougee:audiorecorderview:1.0.2'
+    implementation 'com.github.tougee:audiorecorderview:1.0.3'
 }
 ```
 
