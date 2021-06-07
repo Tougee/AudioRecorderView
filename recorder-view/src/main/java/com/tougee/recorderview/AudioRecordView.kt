@@ -6,10 +6,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.support.annotation.ColorInt
-import android.support.annotation.DrawableRes
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_CANCEL
@@ -21,9 +17,15 @@ import android.view.View.OnTouchListener
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import kotlinx.android.synthetic.main.view_audio_record.view.*
 import kotlinx.android.synthetic.main.view_slide_panel.view.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 class AudioRecordView : FrameLayout {
 
     companion object {
@@ -54,7 +56,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_circle.audioDrawable = resources.getDrawable(value, null)
+            record_circle.audioDrawable = ResourcesCompat.getDrawable(resources, value, null)!!
         }
 
     var micHintEnable: Boolean = true
@@ -186,6 +188,7 @@ class AudioRecordView : FrameLayout {
         record_ib.setOnTouchListener(recordOnTouchListener)
     }
 
+    @Suppress("unused")
     fun cancelExternal() {
         removeCallbacks(recordRunnable)
         cleanUp()

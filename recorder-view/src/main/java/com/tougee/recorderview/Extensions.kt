@@ -7,11 +7,11 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.support.v4.view.ViewCompat
-import android.support.v4.view.ViewPropertyAnimatorListener
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewPropertyAnimatorListener
 import java.util.Formatter
 import java.util.Locale
 
@@ -118,12 +118,14 @@ fun View.fadeOut(duration: Long, delay: Long = 0) {
     this.alpha = 1f
     ViewCompat.animate(this).alpha(0f).setStartDelay(delay).setDuration(duration).setListener(object : ViewPropertyAnimatorListener {
         override fun onAnimationStart(view: View) {
+            @Suppress("DEPRECATION")
             view.isDrawingCacheEnabled = true
         }
 
         override fun onAnimationEnd(view: View) {
             view.visibility = View.INVISIBLE
             view.alpha = 0f
+            @Suppress("DEPRECATION")
             view.isDrawingCacheEnabled = false
         }
 

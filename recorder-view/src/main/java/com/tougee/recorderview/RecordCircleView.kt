@@ -10,11 +10,13 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import kotlin.math.max
+import kotlin.math.min
 
 class RecordCircleView : View {
 
@@ -45,7 +47,7 @@ class RecordCircleView : View {
     private var animateToAmplitude = 0f
     private var animateAmplitudeDiff = 0f
     private var lastUpdateTime = 0L
-    var lockAnimatedTranslation = 0f
+    private var lockAnimatedTranslation = 0f
         set(value) {
             field = value
             invalidate()
@@ -57,31 +59,31 @@ class RecordCircleView : View {
 
     lateinit var callback: Callback
 
-    var audioDrawable: Drawable = resources.getDrawable(R.drawable.ic_record_mic_white, null)
-    private val sendDrawable: Drawable by lazy { resources.getDrawable(R.drawable.ic_send_white_24dp, null) }
+    var audioDrawable: Drawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_record_mic_white, null)!!
+    private val sendDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.ic_send_white_24dp, null)!! }
 
     private val lockDrawable: Drawable by lazy {
-        resources.getDrawable(R.drawable.lock_middle, null).apply {
+        ResourcesCompat.getDrawable(resources, R.drawable.lock_middle, null)!!.apply {
             colorFilter = PorterDuffColorFilter(colorLock, PorterDuff.Mode.MULTIPLY)
         }
     }
     private val lockTopDrawable: Drawable by lazy {
-        resources.getDrawable(R.drawable.lock_top, null).apply {
+        ResourcesCompat.getDrawable(resources, R.drawable.lock_top, null)!!.apply {
             colorFilter = PorterDuffColorFilter(colorLock, PorterDuff.Mode.MULTIPLY)
         }
     }
     private val lockArrowDrawable: Drawable by lazy {
-        resources.getDrawable(R.drawable.lock_arrow, null).apply {
+        ResourcesCompat.getDrawable(resources, R.drawable.lock_arrow, null)!!.apply {
             colorFilter = PorterDuffColorFilter(colorLock, PorterDuff.Mode.MULTIPLY)
         }
     }
     private val lockBackgroundDrawable: Drawable by lazy {
-        resources.getDrawable(R.drawable.lock_round, null).apply {
+        ResourcesCompat.getDrawable(resources, R.drawable.lock_round, null)!!.apply {
             colorFilter = PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY)
         }
     }
     private val lockShadowDrawable: Drawable by lazy {
-        resources.getDrawable(R.drawable.lock_round_shadow, null).apply {
+        ResourcesCompat.getDrawable(resources, R.drawable.lock_round_shadow, null)!!.apply {
             colorFilter = PorterDuffColorFilter(colorCircle, PorterDuff.Mode.MULTIPLY)
         }
     }
@@ -91,7 +93,7 @@ class RecordCircleView : View {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     fun setAmplitude(value: Double) {
-        animateToAmplitude = Math.min(100.0, value).toFloat() / 100.0f
+        animateToAmplitude = min(100.0, value).toFloat() / 100.0f
         animateAmplitudeDiff = (animateToAmplitude - amplitude) / 150.0f
         lastUpdateTime = System.currentTimeMillis()
         invalidate()
@@ -162,7 +164,7 @@ class RecordCircleView : View {
         var yAdd = 0f
 
         if (lockAnimatedTranslation != 10000f) {
-            yAdd = Math.max(0f, startTranslation - lockAnimatedTranslation)
+            yAdd = max(0f, startTranslation - lockAnimatedTranslation)
             if (yAdd > context.dipInt(57f)) {
                 yAdd = context.dipInt(57f).toFloat()
             }
@@ -171,15 +173,19 @@ class RecordCircleView : View {
 
         val sc: Float
         val alpha: Float
-        if (scale <= 0.5f) {
-            sc = scale / 0.5f
-            alpha = sc
-        } else if (scale <= 0.75f) {
-            sc = 1.0f - (scale - 0.5f) / 0.25f * 0.1f
-            alpha = 1f
-        } else {
-            sc = 0.9f + (scale - 0.75f) / 0.25f * 0.1f
-            alpha = 1f
+        when {
+            scale <= 0.5f -> {
+                sc = scale / 0.5f
+                alpha = sc
+            }
+            scale <= 0.75f -> {
+                sc = 1.0f - (scale - 0.5f) / 0.25f * 0.1f
+                alpha = 1f
+            }
+            else -> {
+                sc = 0.9f + (scale - 0.75f) / 0.25f * 0.1f
+                alpha = 1f
+            }
         }
         val dt = System.currentTimeMillis() - lastUpdateTime
         if (animateToAmplitude != amplitude) {
