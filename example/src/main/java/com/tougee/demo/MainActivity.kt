@@ -8,11 +8,10 @@ import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
-import android.view.View
 import android.widget.Toast
+import com.tougee.demo.databinding.ActivityMainBinding
 import com.tougee.recorderview.AudioRecordView
 import com.tougee.recorderview.toast
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.PrintWriter
@@ -22,6 +21,7 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
     companion object {
         const val REQUEST_CAMERA_PERMISSION_RESULT = 123
     }
+    lateinit var binding: ActivityMainBinding
 
     private val file: File by lazy {
         val f = File("$externalCacheDir${File.separator}audio.pcm")
@@ -45,9 +45,10 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        file_tv.text = "path: ${file.absolutePath}\nlength: ${file.length()}"
-        record_view.apply {
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.fileTv.text = "path: ${file.absolutePath}\nlength: ${file.length()}"
+        binding.recordView.apply {
             activity = this@MainActivity
             callback = this@MainActivity
 
@@ -64,13 +65,13 @@ class MainActivity : AppCompatActivity(), AudioRecordView.Callback {
             // cancelText = "Custom Cancel"
             // vibrationEnable = false
         }
-        record_view.setTimeoutSeconds(20)
-        play_iv.setOnClickListener {
+        binding.recordView.setTimeoutSeconds(20)
+        binding.playIv.setOnClickListener {
             if (audioPlayer != null && audioPlayer!!.isPlaying) {
-                play_iv.setImageResource(R.drawable.ic_play_arrow_black_24dp)
+                binding.playIv.setImageResource(R.drawable.ic_play_arrow_black_24dp)
                 audioPlayer!!.stop()
             } else {
-                play_iv.setImageResource(R.drawable.ic_stop_black_24dp)
+                binding.playIv.setImageResource(R.drawable.ic_stop_black_24dp)
                 audioPlayer = AudioPlayer(FileInputStream(file))
                 audioPlayer!!.start()
             }
