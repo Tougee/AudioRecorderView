@@ -8,10 +8,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.MotionEvent.ACTION_CANCEL
-import android.view.MotionEvent.ACTION_DOWN
-import android.view.MotionEvent.ACTION_MOVE
-import android.view.MotionEvent.ACTION_UP
+import android.view.MotionEvent.*
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.animation.AccelerateInterpolator
@@ -22,8 +19,8 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import kotlinx.android.synthetic.main.view_audio_record.view.*
-import kotlinx.android.synthetic.main.view_slide_panel.view.*
+import com.tougee.recorderview.databinding.ViewAudioRecordBinding
+import com.tougee.recorderview.databinding.ViewSlidePanelBinding
 
 @Suppress("MemberVisibilityCanBePrivate")
 class AudioRecordView : FrameLayout {
@@ -37,6 +34,8 @@ class AudioRecordView : FrameLayout {
 
     lateinit var callback: Callback
     lateinit var activity: Activity
+    lateinit var binding: ViewAudioRecordBinding
+    lateinit var _binding: ViewSlidePanelBinding
 
     private var isRecording = false
     private var upBeforeGrant = false
@@ -47,7 +46,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_ib.setImageResource(value)
+            binding.recordIb.setImageResource(value)
         }
 
     @DrawableRes
@@ -56,7 +55,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_circle.audioDrawable = ResourcesCompat.getDrawable(resources, value, null)!!
+            binding.recordCircle.audioDrawable = ResourcesCompat.getDrawable(resources, value, null)!!
         }
 
     var micHintEnable: Boolean = true
@@ -67,7 +66,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_tip_tv.setTextColor(value)
+            binding.recordTipTv.setTextColor(value)
         }
 
     var micHintText: String = context.getString(R.string.hold_to_record_audio)
@@ -75,7 +74,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_tip_tv.text = micHintText
+            binding.recordTipTv.text = micHintText
         }
 
     @DrawableRes
@@ -84,7 +83,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_tip_tv.setBackgroundResource(value)
+            binding.recordTipTv.setBackgroundResource(value)
         }
 
     @ColorInt
@@ -93,7 +92,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_circle.circlePaint.color = value
+            binding.recordCircle.circlePaint.color = value
         }
 
     @ColorInt
@@ -102,7 +101,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            record_circle.cancelIconPaint.color = value
+            binding.recordCircle.cancelIconPaint.color = value
         }
 
     @ColorInt
@@ -111,7 +110,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            slide_panel.updateBlinkDrawable(value)
+            binding.slidePanel.updateBlinkDrawable(value)
         }
 
     var slideCancelText: String = context.getString(R.string.slide_to_cancel)
@@ -119,7 +118,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            slide_cancel_tv.text = value
+            _binding.slideCancelTv.text = value
         }
 
     var cancelText: String = context.getString(R.string.cancel)
@@ -127,7 +126,7 @@ class AudioRecordView : FrameLayout {
             if (value == field) return
 
             field = value
-            cancel_tv.text = value
+            _binding.cancelTv.text = value
         }
 
     var vibrationEnable: Boolean = true
@@ -135,7 +134,8 @@ class AudioRecordView : FrameLayout {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        LayoutInflater.from(context).inflate(R.layout.view_audio_record, this, true)
+        binding = ViewAudioRecordBinding.inflate(LayoutInflater.from(context), this)
+        _binding = ViewSlidePanelBinding.bind(binding.root)
 
         val ta = context.obtainStyledAttributes(attrs, R.styleable.AudioRecordView)
         if (ta.hasValue(R.styleable.AudioRecordView_mic_icon)) {
@@ -183,9 +183,9 @@ class AudioRecordView : FrameLayout {
 
         ta.recycle()
 
-        slide_panel.callback = chatSlideCallback
-        record_circle.callback = recordCircleCallback
-        record_ib.setOnTouchListener(recordOnTouchListener)
+        binding.slidePanel.callback = chatSlideCallback
+        binding.recordCircle.callback = recordCircleCallback
+        binding.recordIb.setOnTouchListener(recordOnTouchListener)
     }
 
     @Suppress("unused")
@@ -193,11 +193,11 @@ class AudioRecordView : FrameLayout {
         removeCallbacks(recordRunnable)
         cleanUp()
         updateRecordCircleAndSendIcon()
-        slide_panel.parent.requestDisallowInterceptTouchEvent(false)
+        binding.slidePanel.parent.requestDisallowInterceptTouchEvent(false)
     }
 
     fun setTimeoutSeconds(seconds: Int) {
-        slide_panel?.timeoutSeconds = seconds
+        binding.slidePanel.timeoutSeconds = seconds
     }
 
     private fun cleanUp() {
@@ -217,45 +217,45 @@ class AudioRecordView : FrameLayout {
 
     private fun updateRecordCircleAndSendIcon() {
         if (isRecording) {
-            record_circle.visibility = View.VISIBLE
-            record_circle.setAmplitude(.0)
-            ObjectAnimator.ofFloat(record_circle, "scale", 1f).apply {
+            binding.recordCircle.visibility = View.VISIBLE
+            binding.recordCircle.setAmplitude(.0)
+            ObjectAnimator.ofFloat(binding.recordCircle, "scale", 1f).apply {
                 interpolator = DecelerateInterpolator()
                 duration = 200
                 addListener(
                     onEnd = {
-                        record_circle.visibility = View.VISIBLE
+                        binding.recordCircle.visibility = View.VISIBLE
                     },
                     onCancel = {
-                        record_circle.visibility = View.VISIBLE
+                        binding.recordCircle.visibility = View.VISIBLE
                     }
                 )
             }.start()
-            record_ib.animate().setDuration(200).alpha(0f).start()
-            slide_panel.onStart()
+            binding.recordIb.animate().setDuration(200).alpha(0f).start()
+            binding.slidePanel.onStart()
         } else {
-            ObjectAnimator.ofFloat(record_circle, "scale", 0f).apply {
+            ObjectAnimator.ofFloat(binding.recordCircle, "scale", 0f).apply {
                 interpolator = AccelerateInterpolator()
                 duration = 200
                 addListener(
                     onEnd = {
-                        record_circle.visibility = View.GONE
-                        record_circle.setSendButtonInvisible()
+                        binding.recordCircle.visibility = View.GONE
+                        binding.recordCircle.setSendButtonInvisible()
                     },
                     onCancel = {
-                        record_circle.visibility = View.GONE
-                        record_circle.setSendButtonInvisible()
+                        binding.recordCircle.visibility = View.GONE
+                        binding.recordCircle.setSendButtonInvisible()
                     }
                 )
             }.start()
-            record_ib.animate().setDuration(200).alpha(1f).start()
-            slide_panel.onEnd()
+            binding.recordIb.animate().setDuration(200).alpha(1f).start()
+            binding.slidePanel.onEnd()
         }
     }
 
     private fun clickSend() {
-        if (micHintEnable && record_tip_tv.visibility == View.INVISIBLE) {
-            record_tip_tv.fadeIn(ANIMATION_DURATION)
+        if (micHintEnable && binding.recordTipTv.visibility == View.INVISIBLE) {
+            binding.recordTipTv.fadeIn(ANIMATION_DURATION)
             if (vibrationEnable) {
                 context.vibrate(longArrayOf(0, 10))
             }
@@ -278,13 +278,13 @@ class AudioRecordView : FrameLayout {
     private val recordOnTouchListener = OnTouchListener { _, event ->
         when (event.action) {
             ACTION_DOWN -> {
-                if (record_circle.sendButtonVisible) {
+                if (binding.recordCircle.sendButtonVisible) {
                     return@OnTouchListener false
                 }
 
                 originX = event.rawX
                 startX = event.rawX
-                val w = slide_panel.slideWidth
+                val w = binding.slidePanel.slideWidth
                 if (w > 0) {
                     maxScrollX = w
                 }
@@ -295,30 +295,30 @@ class AudioRecordView : FrameLayout {
                 return@OnTouchListener true
             }
             ACTION_MOVE -> {
-                if (record_circle.sendButtonVisible || !hasStartRecord) return@OnTouchListener false
+                if (binding.recordCircle.sendButtonVisible || !hasStartRecord) return@OnTouchListener false
 
-                val x = record_circle.setLockTranslation(event.y)
+                val x = binding.recordCircle.setLockTranslation(event.y)
                 if (x == 2) {
                     ObjectAnimator.ofFloat(
-                        record_circle, "lockAnimatedTranslation",
-                        record_circle.startTranslation
+                        binding.recordCircle, "lockAnimatedTranslation",
+                        binding.recordCircle.startTranslation
                     ).apply {
                         duration = 150
                         interpolator = DecelerateInterpolator()
                         doOnEnd { locked = true }
                     }.start()
-                    slide_panel.toCancel()
+                    binding.slidePanel.toCancel()
                     return@OnTouchListener false
                 }
 
                 val moveX = event.rawX
                 if (moveX != 0f) {
-                    slide_panel.slideText(startX - moveX)
+                    binding.slidePanel.slideText(startX - moveX)
                     if (originX - moveX > maxScrollX) {
                         removeCallbacks(recordRunnable)
                         removeCallbacks(checkReadyRunnable)
                         handleCancelOrEnd(true)
-                        slide_panel.parent.requestDisallowInterceptTouchEvent(false)
+                        binding.slidePanel.parent.requestDisallowInterceptTouchEvent(false)
                         triggeredCancel = true
                         return@OnTouchListener false
                     }
@@ -345,10 +345,10 @@ class AudioRecordView : FrameLayout {
                     // delay check sendButtonVisible
                     postDelayed(
                         {
-                            if (!record_circle.sendButtonVisible) {
+                            if (!binding.recordCircle.sendButtonVisible) {
                                 handleCancelOrEnd(true)
                             } else {
-                                record_circle.sendButtonVisible = false
+                                binding.recordCircle.sendButtonVisible = false
                             }
                         },
                         200
@@ -356,7 +356,7 @@ class AudioRecordView : FrameLayout {
                     return@OnTouchListener false
                 }
 
-                if (isRecording && !record_circle.sendButtonVisible) {
+                if (isRecording && !binding.recordCircle.sendButtonVisible) {
                     handleCancelOrEnd(event.action == ACTION_CANCEL)
                 } else {
                     cleanUp()
@@ -373,8 +373,8 @@ class AudioRecordView : FrameLayout {
     private val sendClickRunnable = Runnable { clickSend() }
 
     private val hideRecordTipRunnable = Runnable {
-        if (record_tip_tv.visibility == View.VISIBLE) {
-            record_tip_tv.fadeOut(ANIMATION_DURATION)
+        if (binding.recordTipTv.visibility == View.VISIBLE) {
+            binding.recordTipTv.fadeOut(ANIMATION_DURATION)
         }
     }
 
@@ -384,7 +384,11 @@ class AudioRecordView : FrameLayout {
             removeCallbacks(hideRecordTipRunnable)
             post(hideRecordTipRunnable)
 
-            if (ContextCompat.checkSelfPermission(activity, (Manifest.permission.RECORD_AUDIO)) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    activity,
+                    (Manifest.permission.RECORD_AUDIO)
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 99)
                 return@Runnable
             }
@@ -395,7 +399,7 @@ class AudioRecordView : FrameLayout {
             }
             upBeforeGrant = false
             post(checkReadyRunnable)
-            record_ib.parent.requestDisallowInterceptTouchEvent(true)
+            binding.recordIb.parent.requestDisallowInterceptTouchEvent(true)
         }
     }
 
@@ -408,7 +412,7 @@ class AudioRecordView : FrameLayout {
                 }
                 isRecording = true
                 updateRecordCircleAndSendIcon()
-                record_circle.setLockTranslation(10000f)
+                binding.recordCircle.setLockTranslation(10000f)
             } else {
                 postDelayed(checkReadyRunnable, 50)
             }
