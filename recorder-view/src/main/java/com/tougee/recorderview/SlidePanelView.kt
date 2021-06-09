@@ -127,7 +127,7 @@ class SlidePanelView : RelativeLayout {
 
     private fun handleEnd() {
         toCanceled = false
-        binding.timeTv.alpha = 0f
+        binding.cancelTv.alpha = 0f
         binding.cancelTv.translationY = 0f
         binding.slideLl.alpha = 1f
         binding.slideLl.translationY = 0f
