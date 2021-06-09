@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.tougee.recorderview
 
 import android.animation.Animator
@@ -29,6 +31,7 @@ class AudioScaleView : View {
     private var animPos = 0f
     private var animating = false
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var canceled = false
         set(value) {
             field = value
@@ -90,7 +93,7 @@ class AudioScaleView : View {
     }
 
     private fun startScaleAnim() {
-        val h = animQueue.peekLast()
+        val h = animQueue.peekLast() ?: return
         val valueAnimator = ValueAnimator.ofFloat(0f, h).apply {
             duration = ((h / height) * ITEM_MAX_DURATION).toLong()
             interpolator = AccelerateInterpolator()
@@ -115,6 +118,7 @@ class AudioScaleView : View {
         valueAnimator?.start()
     }
 
+    @Suppress("unused")
     fun addScale(h: Float) {
         if (scales.size >= count) return
 
