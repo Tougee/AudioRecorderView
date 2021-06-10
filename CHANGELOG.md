@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+## Version 1.0.4
+_2021_06-10_
+
+This release contains Migration to AndroidX and ViewBinding
+
 ## Version 1.0.3
 _2020-11-12_
 
